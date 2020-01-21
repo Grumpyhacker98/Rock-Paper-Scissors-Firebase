@@ -12,13 +12,61 @@
 <body>
 
 <div class="container">
+
+    <!-- 2 buttons to select what player the computer is ,a button to lock it in-->
     <div class="row">
         <div class="col">
-            <button class="button" value="a">A</button>
+            <button class="player-select" value="player1">Player 1</button>
+        </div>
+        <div class="col">
+            <button class="player-select" value="player2">Player 2</button>
+        </div>
+        <div class="col">
+            <button id="lock-in">Lock in</button>
         </div>
     </div>
+
+    <!-- wins(yourwins) loses(otherplayerswins) and reset button-->
     <div class="row">
-        <div class="col"></div>
+        <div class="col">
+            <p>Wins:<p id="wins"></p></p>
+        </div>
+        <div class="col">
+            <p>Losses:<p id="losses"></p></p>
+        </div>
+        <div class="col">
+            <button id="reset">Restart game</button>
+        </div>
+    </div>
+
+    <!-- game status jumbotron with overflow -->
+    <!-- needs overflow -->
+    <div class="row">
+        <div class="jumbotron">
+            <h1 class="display-4">Hello, world!</h1>
+            <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+            <hr class="my-4">
+            <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+            <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+          </div>
+    </div>
+
+    <!-- 3 rock paper scissors buttons -->
+    <div class="row">
+        <div class="col">
+            <button class="game-logic" value="r">Rock</button>
+        </div>
+        <div class="col">
+            <button class="game-logic" value="p">Paper</button>
+        </div>
+        <div class="col">
+            <button class="game-logic" value="s">Scissors</button>
+        </div>
+    </div>
+
+    <!-- when i have the time i perhaps can put in a chat funtion -->
+    <div class="row">
+        
     </div>
 </div>
 

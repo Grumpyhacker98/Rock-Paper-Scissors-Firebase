@@ -1,7 +1,29 @@
-// firebase link
+// 2 buttons to select what player the computer is
+// a button to lock it in 
 
-// 2 player vars
-// lock in var?
+// wins(yourwins) loses(otherplayerswins)
+
+// game status jumbotron with overflow
+
+// 3 rock paper scissors buttons
+
+// when i have the time i perhaps can put in a chat funtion
+
+
+
+// infinite game cycle
+// im thinking of 2 timers that work as the phases that are strung into eachother
+// started on both players locking in
+// duel phase
+// intermission phase
+
+// gamelogic function
+// game status display function
+// reset game function
+
+
+
+
 
 $(".button").on("click",function(){
     console.log($(this).val())
