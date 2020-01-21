@@ -1,26 +1,50 @@
-// 2 buttons to select what player the computer is
-// a button to lock it in 
-
-// wins(yourwins) loses(otherplayerswins)
-
-// game status jumbotron with overflow
-
-// 3 rock paper scissors buttons
-
-// when i have the time i perhaps can put in a chat funtion
-
-
-
-// infinite game cycle
-// im thinking of 2 timers that work as the phases that are strung into eachother
-// started on both players locking in
-// duel phase
-// intermission phase
 
 // gamelogic function
+// once duel phase countdown is over 
+// it takes what option is locked in through if statements
+
 // game status display function
 // reset game function
 
+// when both players are locked in
+// duel phase 5 second countdown
+    // duel phase: 5,  4,  3,  2,  1
+    // select your weapon !
+    // you chose ()
+// grab their choices and run game logic
+// intermission phase 5 seconds
+    // intermission: 5, 4, 3, 2, 1
+    // player? was beaten by player?
+    // well done/better luck next time 
+// run duel phase again
+
+// duel phase
+// set timer 5 seconds + append second countdown
+// on end run game logic
+
+// intermission phase
+// set 5 sec timer + append countdown
+// on end run duel
+
+// when the document is fully loaded
+$(document).ready(function() {
+
+    // player1/2 select button
+    // if locked in return false
+    // make this computer sent database that player info
+
+    // lock in button
+    // lock in variable true
+    // run duel phase
+
+    // reset button
+    // stop timers and reset all variables and html to intro html
+
+    // rockpaper scissors buttons
+    // if intermission return false
+    // if duel make player choice this variable and display on html
+    
+});
 
 
 
@@ -150,40 +174,3 @@ $(".button").on("click",function(){
 
 //         updateHTML()
 
-//         // when the document is fully loaded
-//         $(document).ready(function() {
-
-//             // keypresses will be collected
-//             document.onkeydown = function(event){
-//                 var userGuess= event.key.toLowerCase();
-
-//                 // and filtered b4 approving game logic the 3 first statements should be combined
-//                 if (userGuess === "s")  {
-//                     gameLogic(userGuess)
-//                 } else if (userGuess === "r"){
-//                     gameLogic(userGuess)
-//                 } else if (userGuess === "p"){
-//                     gameLogic(userGuess)
-//                 } else {
-//                     console.log(userGuess+" wont work")
-//                     gameStatus = userGuess+" is not a valid option";
-//                     updateHTML(gameStatus)
-//                 }
-//             };
-
-//             $("#rock").on("click", function(){
-//                 userGuess = "r";
-//                 gameLogic(userGuess);
-//             });
-
-//             $("#paper").on("click", function(){
-//                 userGuess = "p";
-//                 gameLogic(userGuess);
-//             });
-
-//             $("#scissors").on("click", function(){
-//                 userGuess = "s";
-//                 gameLogic(userGuess);
-//             });
-
-//         });
