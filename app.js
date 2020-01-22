@@ -1,4 +1,23 @@
 
+// firebase link and startup
+// var firebaseConfig = {
+//     apiKey: "AIzaSyDYnDKzW-ChshbiyqIdVpLgJT7fxeDZm3M",
+//     authDomain: "rockpaperscissors-4e54e.firebaseapp.com",
+//     databaseURL: "https://rockpaperscissors-4e54e.firebaseio.com",
+//     projectId: "rockpaperscissors-4e54e",
+//     storageBucket: "rockpaperscissors-4e54e.appspot.com",
+//     messagingSenderId: "626265293266",
+//     appId: "1:626265293266:web:1e65341efe25dc6af1880b"
+// };
+// // Initialize Firebase
+// firebase.initializeApp(firebaseConfig);
+
+// var database = firebase.database();
+
+var startTime = 6;
+var timer = startTime
+var intervalId;
+
 // gamelogic function
 // once duel phase countdown is over 
 // it takes what option is locked in through if statements
@@ -21,10 +40,35 @@
 // duel phase
 // set timer 5 seconds + append second countdown
 // on end run game logic
+function run() {
+    clearInterval(intervalId);
+    intervalId = setInterval(decrement, 1000);
+}
+
+function decrement() {
+
+timer--;
+console.log(timer)
+$("#jumbo-1").append(", "+timer)
+
+if (timer === 0) {
+    alert("here")
+    timer = startTime
+    run()
+}
+}
+
+run()
+
 
 // intermission phase
 // set 5 sec timer + append countdown
 // on end run duel
+
+// database.ref().on("value", function() {
+
+  
+// });
 
 // when the document is fully loaded
 $(document).ready(function() {
@@ -55,21 +99,6 @@ $(".button").on("click",function(){
 
 
 //     // firebase scrapcode
-//             // wrong link rn
-//             var config = {
-//                 apiKey: "AIzaSyD-AV2aTE2P4bKpZOuqcnyinFrZdtX7mbI",
-//                 authDomain: "followalong-5844d.firebaseapp.com",
-//                 databaseURL: "https://followalong-5844d.firebaseio.com",
-//                 projectId: "followalong-5844d",
-//                 storageBucket: "followalong-5844d.appspot.com",
-//                 messagingSenderId: "879265537909",
-//                 appId: "1:879265537909:web:ef7dbdb47009f2db53bd3c",
-//                 measurementId: "G-XDQ504P4MV"
-//             };
-
-//             firebase.initializeApp(config);
-            
-//             var database = firebase.database();
 
 //             // on value refresh values from firebase
 //             database.ref().on("child_added", function(childSnapshot) {
@@ -174,3 +203,13 @@ $(".button").on("click",function(){
 
 //         updateHTML()
 
+
+
+
+
+// timer scrapcode
+
+        // //  The stop function
+        // function stop() {
+        //   clearInterval(intervalId);
+        // }
