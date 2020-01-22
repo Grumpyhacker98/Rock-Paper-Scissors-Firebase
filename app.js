@@ -14,23 +14,15 @@ firebase.initializeApp(firebaseConfig);
 
 var database = firebase.database();
 
+// timer variables
 var startTime = 6;
 var timer = startTime
+var duelPhase = false;
 var intervalId;
 
-// gamelogic function
-// once duel phase countdown is over 
-// it takes what option is locked in through if statements
-
-// game status display function
-// reset game function
-function resetGame(){
-    stop()
-    $("#jumbo-1").text("Select a player and lock in!")
-    $("#jumbo-2").text("Waiting for player 1")
-    $("#jumbo-3").text("Waiting for player 2")
-}
-
+var baseFalse = false
+var baseZero = 0
+var baseA = "a"
 // when both players are locked in
 // duel phase 5 second countdown
     // duel phase: 5,  4,  3,  2,  1
@@ -63,8 +55,9 @@ function standOff() {
         // find victor with logic function and prep intermission phase
         if (timer === 0) {
             timer = startTime
+            duelPhase = false
             $("#jumbo-1").text("Intermission: ")
-            $("#jumbo-2").text("Rest now Champion")
+            $("#jumbo-2").text("Rest, Champion")
             $("#jumbo-3").text("")
             runBreak()
         }
@@ -78,6 +71,7 @@ function breakTime() {
         // begin duel phase
         if (timer === 0) {
             timer = startTime
+            duelPhase = true
             $("#jumbo-1").text("Duel Phase: ")
             $("#jumbo-2").text("Chose your weapon!")
             $("#jumbo-3").text("")
@@ -85,44 +79,81 @@ function breakTime() {
         }
 }
 
-//  The stop function
-function stop() {
-    clearInterval(intervalId);
+function gameLogic(){
+    // grab both player variables
+    // 3 player 1 wins
+    // 3 player 2 wins
+    // 3 ties
+    // .text who won and ++ values
+    
+
+
 }
 
+// refreshes constantly
 database.ref().on("value", function(snapshot) {
-console.log(snapshot.val())
-  
+
+    console.log(snapshot.val())
+
+
+    // grabbing individual identifiers
+    // console.log(snapshot.child("Player1Choice").val())
+
+    // player1choice = snapshot.child("Player1Choice").val()
+    // player2choice = snapshot.child("Player2Choice").val()
+    // if snapshot.child("player1") && player 2 start game cycle
+    
 });
 
 // when the document is fully loaded
 $(document).ready(function() {
 
     // player1/2 select button
-    // if locked in return false
-    // make this computer sent database that player info
-
-    // lock in button
-    // lock in variable true
-    // run duel phase
-
-    // reset button
-    // stop timers and reset all variables and html to intro html
+    $("#select-player1").on("click",function(){
+        $("#jumbo-2").text("You are player1")
+        $("#current-player").text("1")
+    })
+    $("#select-player2").on("click",function(){
+        $("#jumbo-3").text("You are player2")
+        $("#current-player").text("2")
+    })
 
     // rockpaper scissors buttons
-    // if intermission return false
-    // if duel make player choice this variable and display on html
+    $(".game-logic").on("click",function(){
+        // if the duel phase is running
+        if(!duelPhase){
+            return false;
+        }
+        $("#jumbo-3").text("You chose ("+$(this).val()+")")
+        database.ref().set({
+            Player1Choice: $(this).val(),
+        })
+    })
     
+    // reset button
+    $("#reset").on("click",function(){
+        clearInterval(intervalId);
+        stop()
+        $("#jumbo-1").text("Select a player and lock in!")
+        $("#jumbo-2").text("Waiting for player 1")
+        $("#jumbo-3").text("Waiting for player 2")
+
+        // reset ALL the firebase variables
+        database.ref().set({
+            Player1: false,
+            Player1Choice: "a",
+            Player1Wins: 0,
+            Player2: false,
+            Player2Choice: "a",
+            Player2Wins: 0,
+            Ties: 0,
+        })
+    })
+    
+
 });
 
 
-
-
-$(".game-logic").on("click",function(){
-    console.log($(this).val())
-})
-
-$("#reset").on("click",resetGame)
 
 runBreak()
 
@@ -134,9 +165,7 @@ runBreak()
 
 //                 data = childSnapshot.val().newEmployee
 
-//                 database.ref().push({
-//                     newEmployee
-//                 })
+//                 
 
 //             })
 

@@ -16,13 +16,13 @@
     <!-- 2 buttons to select what player the computer is ,a button to lock it in-->
     <div class="row">
         <div class="col">
-            <button class="player-select" value="player1">Player 1</button>
+            <button id="select-player1">Player 1</button>
         </div>
         <div class="col">
-            <button class="player-select" value="player2">Player 2</button>
+            <button id="select-player2">Player 2</button>
         </div>
         <div class="col">
-            <button id="lock-in">Lock in</button>
+            <button id="reset">Restart game</button>
         </div>
     </div>
 
@@ -35,7 +35,7 @@
             <p>Losses:<p id="losses"></p></p>
         </div>
         <div class="col">
-            <button id="reset">Restart game</button>
+            <p>You are player:<p id="current-player"></p></p>
         </div>
     </div>
 
