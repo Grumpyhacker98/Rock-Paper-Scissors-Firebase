@@ -1,18 +1,18 @@
 
 // firebase link and startup
-// var firebaseConfig = {
-//     apiKey: "AIzaSyDYnDKzW-ChshbiyqIdVpLgJT7fxeDZm3M",
-//     authDomain: "rockpaperscissors-4e54e.firebaseapp.com",
-//     databaseURL: "https://rockpaperscissors-4e54e.firebaseio.com",
-//     projectId: "rockpaperscissors-4e54e",
-//     storageBucket: "rockpaperscissors-4e54e.appspot.com",
-//     messagingSenderId: "626265293266",
-//     appId: "1:626265293266:web:1e65341efe25dc6af1880b"
-// };
-// // Initialize Firebase
-// firebase.initializeApp(firebaseConfig);
+var firebaseConfig = {
+    apiKey: "AIzaSyDYnDKzW-ChshbiyqIdVpLgJT7fxeDZm3M",
+    authDomain: "rockpaperscissors-4e54e.firebaseapp.com",
+    databaseURL: "https://rockpaperscissors-4e54e.firebaseio.com",
+    projectId: "rockpaperscissors-4e54e",
+    storageBucket: "rockpaperscissors-4e54e.appspot.com",
+    messagingSenderId: "626265293266",
+    appId: "1:626265293266:web:1e65341efe25dc6af1880b"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-// var database = firebase.database();
+var database = firebase.database();
 
 var startTime = 6;
 var timer = startTime
@@ -24,6 +24,12 @@ var intervalId;
 
 // game status display function
 // reset game function
+function resetGame(){
+    stop()
+    $("#jumbo-1").text("Select a player and lock in!")
+    $("#jumbo-2").text("Waiting for player 1")
+    $("#jumbo-3").text("Waiting for player 2")
+}
 
 // when both players are locked in
 // duel phase 5 second countdown
@@ -37,38 +43,57 @@ var intervalId;
     // well done/better luck next time 
 // run duel phase again
 
-// duel phase
-// set timer 5 seconds + append second countdown
-// on end run game logic
-function run() {
+// begin the duel phase function
+function runDuel() {
     clearInterval(intervalId);
-    intervalId = setInterval(decrement, 1000);
+    intervalId = setInterval(standOff, 1000);
 }
 
-function decrement() {
-
-timer--;
-console.log(timer)
-$("#jumbo-1").append(", "+timer)
-
-if (timer === 0) {
-    alert("here")
-    timer = startTime
-    run()
-}
+// begin the intermission function
+function runBreak() {
+    clearInterval(intervalId);
+    intervalId = setInterval(breakTime, 1000);
 }
 
-run()
+// duel function
+function standOff() {
+    timer--;
+    $("#jumbo-1").append(timer+", ")
 
+        // find victor with logic function and prep intermission phase
+        if (timer === 0) {
+            timer = startTime
+            $("#jumbo-1").text("Intermission: ")
+            $("#jumbo-2").text("Rest now Champion")
+            $("#jumbo-3").text("")
+            runBreak()
+        }
+}
 
-// intermission phase
-// set 5 sec timer + append countdown
-// on end run duel
+// intermission function
+function breakTime() {
+    timer--;
+    $("#jumbo-1").append(timer+", ")
 
-// database.ref().on("value", function() {
+        // begin duel phase
+        if (timer === 0) {
+            timer = startTime
+            $("#jumbo-1").text("Duel Phase: ")
+            $("#jumbo-2").text("Chose your weapon!")
+            $("#jumbo-3").text("")
+            runDuel()
+        }
+}
 
+//  The stop function
+function stop() {
+    clearInterval(intervalId);
+}
+
+database.ref().on("value", function(snapshot) {
+console.log(snapshot.val())
   
-// });
+});
 
 // when the document is fully loaded
 $(document).ready(function() {
@@ -93,9 +118,13 @@ $(document).ready(function() {
 
 
 
-$(".button").on("click",function(){
+$(".game-logic").on("click",function(){
     console.log($(this).val())
 })
+
+$("#reset").on("click",resetGame)
+
+runBreak()
 
 
 //     // firebase scrapcode
@@ -105,35 +134,9 @@ $(".button").on("click",function(){
 
 //                 data = childSnapshot.val().newEmployee
 
-//                 employment = Math.floor(moment().diff(moment(data[2]), 'months', true))
-
-
-//             });
-
-//             // enters new employee data into firebase
-//             $("#Submit-Data").on("click", function(event){
-//                 event.preventDefault()
-
-//                 newEmployee = []
-
-//                 name = $("#New-Name").val()
-//                 role = $("#New-Role").val()
-//                 date = $("#New-Date").val()
-//                 rate = $("#New-Rate").val()
-
-//                 newEmployee.push(name)
-//                 newEmployee.push(role)
-//                 newEmployee.push(date)
-//                 newEmployee.push(rate)
-
 //                 database.ref().push({
 //                     newEmployee
 //                 })
-
-//                 $("#New-Name").val("")
-//                 $("#New-Role").val("")
-//                 $("#New-Date").val("")
-//                 $("#New-Rate").val("")
 
 //             })
 
@@ -144,12 +147,6 @@ $(".button").on("click",function(){
 //         var standOff = 0;
 //         var humanVictory = 0;
 
-//         function updateHTML(gameStatus){
-//             $("#humanVictory").text(humanVictory)
-//             $("#robotVictory").text(robotVictory)
-//             $("#standOff").text(standOff)
-//             $("#gameStatus").text(gameStatus)
-//         }
 
 //         function gameLogic(userGuess){
 
@@ -196,20 +193,10 @@ $(".button").on("click",function(){
 //                 gameStatus = "Player("+userGuess+") was beaten by the Computer("+computer+")";
 //                 robotVictory++;
 //             }
-            
-//             updateHTML(gameStatus)
 
 //         };
-
-//         updateHTML()
-
-
-
 
 
 // timer scrapcode
 
-        // //  The stop function
-        // function stop() {
-        //   clearInterval(intervalId);
-        // }
+        
