@@ -23,6 +23,9 @@ var intervalId;
 var baseFalse = false
 var baseZero = 0
 var baseA = "a"
+
+var tempArray = ["r","p","s"]
+
 // when both players are locked in
 // duel phase 5 second countdown
     // duel phase: 5,  4,  3,  2,  1
@@ -57,8 +60,9 @@ function standOff() {
             timer = startTime
             duelPhase = false
             $("#jumbo-1").text("Intermission: ")
-            $("#jumbo-2").text("Rest, Champion")
+            $("#jumbo-2").text("Ready yourself!")
             $("#jumbo-3").text("")
+            gameLogic()
             runBreak()
         }
 }
@@ -80,30 +84,73 @@ function breakTime() {
 }
 
 function gameLogic(){
-    // grab both player variables
-    // 3 player 1 wins
-    // 3 player 2 wins
-    // 3 ties
-    // .text who won and ++ values
+
+    // player2choice = tempArray[Math.floor(Math.random() * Math.floor(tempArray))]
+    // console.log(player2choice)
+
+    // tie
+    if (Player1Choice === Player2Choice){
+        console.log("test")
+    }
+
+    // no participation loss
+    if (Player1Choice === "a"){
+        console.log("test")
+    }
+    if (Player2Choice === "a"){
+        console.log("test")
+    }
+
+    // player1 victory
+    if (Player1Choice === "r" && Player2Choice === "s"){
+        console.log("test")
+    }
+    if (Player1Choice === "s" && Player2Choice === "p"){
+        console.log("test")
+    }
+    if (Player1Choice === "p" && Player2Choice === "r"){
+        console.log("test")
+    }
+
+    // player2 victory
+    if (Player2Choice === "r" && Player1Choice === "s"){
+        console.log("test")
+    }
+    if (Player2Choice === "s" && Player1Choice === "p"){
+        console.log("test")
+    }
+    if (Player2Choice === "p" && Player1Choice === "r"){
+        console.log("test")
+    }
+
     
 
+
+    // if "a" then they didnt press autolose unless both didnt press 
+    // set to a after game
+    database.ref().update({
+        Player1Choice: "a",
+        Player2Choice: "a",
+    })
 
 }
 
-// refreshes constantly
-database.ref().on("value", function(snapshot) {
+// grab data from firebase and make it local variables
+function fireGrab(){
+    database.ref().on("value", function(snapshot) {
 
-    console.log(snapshot.val())
+        console.log(snapshot.val())
 
+        // if snapshot.child("player1") && player 2 start game cycle
+        if (snapshot.child("Player1").val() && snapshot.child("Player2").val()){
+            runBreak()
+        }
+        
+        Player1Choice = snapshot.child("Player1Choice").val()
+        Player2Choice = snapshot.child("Player2Choice").val()
 
-    // grabbing individual identifiers
-    // console.log(snapshot.child("Player1Choice").val())
-
-    // player1choice = snapshot.child("Player1Choice").val()
-    // player2choice = snapshot.child("Player2Choice").val()
-    // if snapshot.child("player1") && player 2 start game cycle
-    
-});
+    })
+}
 
 // when the document is fully loaded
 $(document).ready(function() {
@@ -112,10 +159,18 @@ $(document).ready(function() {
     $("#select-player1").on("click",function(){
         $("#jumbo-2").text("You are player1")
         $("#current-player").text("1")
+        database.ref().update({
+            Player1: true,
+        })
+        fireGrab()
     })
     $("#select-player2").on("click",function(){
         $("#jumbo-3").text("You are player2")
         $("#current-player").text("2")
+        database.ref().update({
+            Player2: true,
+        })
+        fireGrab()
     })
 
     // rockpaper scissors buttons
@@ -125,6 +180,7 @@ $(document).ready(function() {
             return false;
         }
         $("#jumbo-3").text("You chose ("+$(this).val()+")")
+
         database.ref().set({
             Player1Choice: $(this).val(),
         })
@@ -139,7 +195,7 @@ $(document).ready(function() {
         $("#jumbo-3").text("Waiting for player 2")
 
         // reset ALL the firebase variables
-        database.ref().set({
+        database.ref().update({
             Player1: false,
             Player1Choice: "a",
             Player1Wins: 0,
@@ -153,22 +209,15 @@ $(document).ready(function() {
 
 });
 
-
-
-runBreak()
-
-
-//     // firebase scrapcode
-
-//             // on value refresh values from firebase
-//             database.ref().on("child_added", function(childSnapshot) {
-
-//                 data = childSnapshot.val().newEmployee
-
-//                 
-
-//             })
-
+database.ref().update({
+    Player1: false,
+    Player1Choice: "a",
+    Player1Wins: 0,
+    Player2: false,
+    Player2Choice: "a",
+    Player2Wins: 0,
+    Ties: 0,
+})
 
 // // rockpaperscissors scrapcode
 //         var choices = ["r", "p", "s"]
