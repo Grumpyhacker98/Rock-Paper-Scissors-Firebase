@@ -85,46 +85,46 @@ function breakTime() {
 
 function gameLogic(){
 
-    // player2choice = tempArray[Math.floor(Math.random() * Math.floor(tempArray))]
-    // console.log(player2choice)
+    Player2Choice = tempArray[Math.floor(Math.random() * Math.floor(tempArray.length))]
+    console.log(Player2Choice)
 
-    // tie
-    if (Player1Choice === Player2Choice){
-        console.log("test")
-    }
+    database.ref().on("value", function(snapshot) {
 
-    // no participation loss
-    if (Player1Choice === "a"){
-        console.log("test")
-    }
-    if (Player2Choice === "a"){
-        console.log("test")
-    }
-
-    // player1 victory
-    if (Player1Choice === "r" && Player2Choice === "s"){
-        console.log("test")
-    }
-    if (Player1Choice === "s" && Player2Choice === "p"){
-        console.log("test")
-    }
-    if (Player1Choice === "p" && Player2Choice === "r"){
-        console.log("test")
-    }
-
-    // player2 victory
-    if (Player2Choice === "r" && Player1Choice === "s"){
-        console.log("test")
-    }
-    if (Player2Choice === "s" && Player1Choice === "p"){
-        console.log("test")
-    }
-    if (Player2Choice === "p" && Player1Choice === "r"){
-        console.log("test")
-    }
-
+        // console.log(snapshot.val())
     
+        Player1Choice = snapshot.child("Player1Choice").val()
+        // Player2Choice = snapshot.child("Player2Choice").val()
+    
+    })
 
+
+    // 1 tie
+    // 2 no participation loss
+    // 3 player1 victory
+    // 3 player2 victory
+    if (Player1Choice === "a" && Player2Choice === "a"){
+        console.log("both defaulted")
+    } else if (Player1Choice === Player2Choice){
+        console.log("tie")
+    } else if (Player1Choice === "a"){
+        console.log("1 defaulted")
+    } else if (Player2Choice === "a"){
+        console.log("2 defaulted")
+    } else if (Player1Choice === "r" && Player2Choice === "s"){
+        console.log("1 won")
+    } else if (Player1Choice === "s" && Player2Choice === "p"){
+        console.log("1 won")
+    } else if (Player1Choice === "p" && Player2Choice === "r"){
+        console.log("1 won")
+    } else if (Player2Choice === "r" && Player1Choice === "s"){
+        console.log("2 won")
+    } else if (Player2Choice === "s" && Player1Choice === "p"){
+        console.log("2 won")
+    } else if (Player2Choice === "p" && Player1Choice === "r"){
+        console.log("2 won")
+    } else {
+        console.log("somethings wrong")
+    }
 
     // if "a" then they didnt press autolose unless both didnt press 
     // set to a after game
@@ -135,8 +135,8 @@ function gameLogic(){
 
 }
 
-// grab data from firebase and make it local variables
-function fireGrab(){
+// grab data from firebase if both players are true/present then start intermission and begin cycle
+function startGame(){
     database.ref().on("value", function(snapshot) {
 
         console.log(snapshot.val())
@@ -145,12 +145,9 @@ function fireGrab(){
         if (snapshot.child("Player1").val() && snapshot.child("Player2").val()){
             runBreak()
         }
-        
-        Player1Choice = snapshot.child("Player1Choice").val()
-        Player2Choice = snapshot.child("Player2Choice").val()
-
     })
 }
+
 
 // when the document is fully loaded
 $(document).ready(function() {
@@ -162,7 +159,7 @@ $(document).ready(function() {
         database.ref().update({
             Player1: true,
         })
-        fireGrab()
+        startGame()
     })
     $("#select-player2").on("click",function(){
         $("#jumbo-3").text("You are player2")
@@ -170,7 +167,7 @@ $(document).ready(function() {
         database.ref().update({
             Player2: true,
         })
-        fireGrab()
+        startGame()
     })
 
     // rockpaper scissors buttons
@@ -181,7 +178,7 @@ $(document).ready(function() {
         }
         $("#jumbo-3").text("You chose ("+$(this).val()+")")
 
-        database.ref().set({
+        database.ref().update({
             Player1Choice: $(this).val(),
         })
     })
@@ -209,6 +206,7 @@ $(document).ready(function() {
 
 });
 
+// reset on startup
 database.ref().update({
     Player1: false,
     Player1Choice: "a",
@@ -218,63 +216,3 @@ database.ref().update({
     Player2Wins: 0,
     Ties: 0,
 })
-
-// // rockpaperscissors scrapcode
-//         var choices = ["r", "p", "s"]
-//         var robotVictory = 0;
-//         var standOff = 0;
-//         var humanVictory = 0;
-
-
-//         function gameLogic(userGuess){
-
-//             // generating the computers guess
-//             var computer = choices[Math.floor(Math.random() * choices.length)]
-            
-//             // 3 victories
-//             if (userGuess === "r" && computer === "s"){
-//                 console.log("Player("+userGuess+") beat the Computer("+computer+")");
-//                 gameStatus = "Player("+userGuess+") beat the Computer("+computer+")";
-//                 humanVictory++;
-//             }
-//             if (userGuess === "s" && computer === "p"){
-//                 console.log("Player("+userGuess+") beat the Computer("+computer+")");
-//                 gameStatus = "Player("+userGuess+") beat the Computer("+computer+")";
-//                 humanVictory++;
-//             }
-//             if (userGuess === "p" && computer === "r"){
-//                 console.log("Player("+userGuess+") beat the Computer("+computer+")");
-//                 gameStatus = "Player("+userGuess+") beat the Computer("+computer+")";
-//                 humanVictory++;
-//             }
-
-//             // 3 ties
-//             if (userGuess === computer){
-//                 console.log("tie")
-//                 gameStatus = "Player("+userGuess+") tied with the Computer("+computer+")";
-//                 standOff++;
-//             }
-
-//             // 3 defeates
-//             if (userGuess === "s" && computer === "r"){
-//                 console.log("Player("+userGuess+") was beaten by the Computer("+computer+")");
-//                 gameStatus = "Player("+userGuess+") was beaten by the Computer("+computer+")";
-//                 robotVictory++;
-//             }
-//             if (userGuess === "p" && computer === "s"){
-//                 console.log("Player("+userGuess+") was beaten by the Computer("+computer+")");
-//                 gameStatus = "Player("+userGuess+") was beaten by the Computer("+computer+")";
-//                 robotVictory++;
-//             }
-//             if (userGuess === "r" && computer === "p"){
-//                 console.log("Player("+userGuess+") was beaten by the Computer("+computer+")");
-//                 gameStatus = "Player("+userGuess+") was beaten by the Computer("+computer+")";
-//                 robotVictory++;
-//             }
-
-//         };
-
-
-// timer scrapcode
-
-        
