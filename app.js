@@ -20,23 +20,7 @@ var timer = startTime
 var duelPhase = false;
 var intervalId;
 
-var baseFalse = false
-var baseZero = 0
-var baseA = "a"
-
 var tempArray = ["r","p","s"]
-
-// when both players are locked in
-// duel phase 5 second countdown
-    // duel phase: 5,  4,  3,  2,  1
-    // select your weapon !
-    // you chose ()
-// grab their choices and run game logic
-// intermission phase 5 seconds
-    // intermission: 5, 4, 3, 2, 1
-    // player? was beaten by player?
-    // well done/better luck next time 
-// run duel phase again
 
 // begin the duel phase function
 function runDuel() {
@@ -63,7 +47,6 @@ function standOff() {
             $("#jumbo-2").text("Ready yourself!")
             $("#jumbo-3").text("")
             gameLogic()
-            runBreak()
         }
 }
 
@@ -90,14 +73,15 @@ function gameLogic(){
 
     database.ref().on("value", function(snapshot) {
 
-        // console.log(snapshot.val())
+        // console.log(snapshot.child("Player1Choice").val())
+        // console.log(snapshot.child("Player2Choice").val())
     
         Player1Choice = snapshot.child("Player1Choice").val()
         // Player2Choice = snapshot.child("Player2Choice").val()
     
     })
 
-
+    // double default
     // 1 tie
     // 2 no participation loss
     // 3 player1 victory
@@ -132,6 +116,8 @@ function gameLogic(){
         Player1Choice: "a",
         Player2Choice: "a",
     })
+
+    runBreak()
 
 }
 
