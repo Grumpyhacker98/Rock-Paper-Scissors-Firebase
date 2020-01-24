@@ -72,11 +72,10 @@ function breakTime() {
 }
 
 
-
 // when data changes console run this
 database.ref().on("value", function(snapshot) {
 
-    console.log(snapshot.val())
+    console.log("ref on value tick")
 
     // if the game logic value is true run game logic then reset runlogic value
     if (snapshot.child("RunLogic").val()){
@@ -93,34 +92,107 @@ database.ref().on("value", function(snapshot) {
         // 3 player 2 victories
         if(Player1Choice==="a"&&Player2Choice==="a"){
             console.log("both defaulted")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Ties: snapshot.child("Ties").val()+1
+            })
+            $("#ties").text(snapshot.child("Ties").val())
+            $("#jumbo-3").text("Both Players defaulted")
         } else if(Player1Choice===Player2Choice){
             console.log("tie")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Ties: snapshot.child("Ties").val()+1
+            })
+            $("#ties").text(snapshot.child("Ties").val())
+            $("#jumbo-3").text("Tie")
         } else if(Player1Choice==="a"){
             console.log("Player1 defaulted")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player2Wins: snapshot.child("Player2Wins").val()+1
+            })
+            $("#player2wins").text(snapshot.child("Player2Wins").val())
+            $("#jumbo-3").text("Player 1 defaulted")
         } else if(Player2Choice==="a"){
             console.log("Player2 defaulted")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player1Wins: snapshot.child("Player1Wins").val()+1
+            })
+            $("#player1wins").text(snapshot.child("Player1Wins").val())
+            $("#jumbo-3").text("Player 2 defaulted")
         } else if(Player1Choice==="r"&&Player2Choice==="s"){
             console.log("Player1 Won")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player1Wins: snapshot.child("Player1Wins").val()+1
+            })
+            $("#player1wins").text(snapshot.child("Player1Wins").val())
+            $("#jumbo-3").text("Player 1 won with rock")
         } else if(Player1Choice==="s"&&Player2Choice==="p"){
             console.log("Player1 Won")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player1Wins: snapshot.child("Player1Wins").val()+1
+            })
+            $("#player1wins").text(snapshot.child("Player1Wins").val())
+            $("#jumbo-3").text("Player 1 won with scissors")
         } else if(Player1Choice==="p"&&Player2Choice==="r"){
             console.log("Player1 Won")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player1Wins: snapshot.child("Player1Wins").val()+1
+            })
+            $("#player1wins").text(snapshot.child("Player1Wins").val())
+            $("#jumbo-3").text("Player 1 wins with paper")
         } else if(Player2Choice==="r"&&Player1Choice==="s"){
             console.log("Player2 Won")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player2Wins: snapshot.child("Player2Wins").val()+1
+            })
+            $("#player2wins").text(snapshot.child("Player2Wins").val())
+            $("#jumbo-3").text("Player 2 wins with rock")
         } else if(Player2Choice==="s"&&Player1Choice==="p"){
             console.log("Player2 Won")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player2Wins: snapshot.child("Player2Wins").val()+1
+            })
+            $("#player2wins").text(snapshot.child("Player2Wins").val())
+            $("#jumbo-3").text("Player 2 wins with scissors")
         } else if(Player2Choice==="p"&&Player1Choice==="r"){
             console.log("Player2 Won")
+            database.ref().update({
+                RunLogic: false,
+                Player1Choice: "a",
+                Player2Choice: "a",
+                Player2Wins: snapshot.child("Player2Wins").val()+1
+            })
+            $("#player2wins").text(snapshot.child("Player2Wins").val())
+            $("#jumbo-3").text("Player 2 wins with paper")
         } else {
             console.log("somethings wrong")
         }
-
-        database.ref().update({
-            RunLogic: false,
-            Player1Choice: "a",
-            Player2Choice: "a",
-            
-        })
 
     }
 
