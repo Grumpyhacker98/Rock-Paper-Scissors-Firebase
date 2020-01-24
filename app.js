@@ -20,6 +20,8 @@ var timer = startTime
 var duelPhase = false;
 var intervalId;
 
+var Player1Choice
+
 var tempArray = ["r","p","s"]
 
 // begin the duel phase function
@@ -46,7 +48,10 @@ function standOff() {
             $("#jumbo-1").text("Intermission: ")
             $("#jumbo-2").text("Ready yourself!")
             $("#jumbo-3").text("")
-            gameLogic()
+            database.ref().update({
+                RunLogic: true,
+            })
+            runBreak()
         }
 }
 
@@ -66,74 +71,71 @@ function breakTime() {
         }
 }
 
-function gameLogic(){
 
-    Player2Choice = tempArray[Math.floor(Math.random() * Math.floor(tempArray.length))]
-    console.log(Player2Choice)
 
-    database.ref().on("value", function(snapshot) {
+// when data changes console run this
+database.ref().on("value", function(snapshot) {
 
-        // console.log(snapshot.child("Player1Choice").val())
-        // console.log(snapshot.child("Player2Choice").val())
-    
+    console.log(snapshot.val())
+
+    // if the game logic value is true run game logic then reset runlogic value
+    if (snapshot.child("RunLogic").val()){
+
         Player1Choice = snapshot.child("Player1Choice").val()
         // Player2Choice = snapshot.child("Player2Choice").val()
-    
-    })
 
-    // double default
-    // 1 tie
-    // 2 no participation loss
-    // 3 player1 victory
-    // 3 player2 victory
-    if (Player1Choice === "a" && Player2Choice === "a"){
-        console.log("both defaulted")
-    } else if (Player1Choice === Player2Choice){
-        console.log("tie")
-    } else if (Player1Choice === "a"){
-        console.log("1 defaulted")
-    } else if (Player2Choice === "a"){
-        console.log("2 defaulted")
-    } else if (Player1Choice === "r" && Player2Choice === "s"){
-        console.log("1 won")
-    } else if (Player1Choice === "s" && Player2Choice === "p"){
-        console.log("1 won")
-    } else if (Player1Choice === "p" && Player2Choice === "r"){
-        console.log("1 won")
-    } else if (Player2Choice === "r" && Player1Choice === "s"){
-        console.log("2 won")
-    } else if (Player2Choice === "s" && Player1Choice === "p"){
-        console.log("2 won")
-    } else if (Player2Choice === "p" && Player1Choice === "r"){
-        console.log("2 won")
-    } else {
-        console.log("somethings wrong")
+        Player2Choice = tempArray[Math.floor(Math.random() * tempArray.length)]
+
+        // 1 double default
+        // 1 tie
+        // 2 single defaults
+        // 3 player 1 victories
+        // 3 player 2 victories
+        if(Player1Choice==="a"&&Player2Choice==="a"){
+            console.log("both defaulted")
+        } else if(Player1Choice===Player2Choice){
+            console.log("tie")
+        } else if(Player1Choice==="a"){
+            console.log("Player1 defaulted")
+        } else if(Player2Choice==="a"){
+            console.log("Player2 defaulted")
+        } else if(Player1Choice==="r"&&Player2Choice==="s"){
+            console.log("Player1 Won")
+        } else if(Player1Choice==="s"&&Player2Choice==="p"){
+            console.log("Player1 Won")
+        } else if(Player1Choice==="p"&&Player2Choice==="r"){
+            console.log("Player1 Won")
+        } else if(Player2Choice==="r"&&Player1Choice==="s"){
+            console.log("Player2 Won")
+        } else if(Player2Choice==="s"&&Player1Choice==="p"){
+            console.log("Player2 Won")
+        } else if(Player2Choice==="p"&&Player1Choice==="r"){
+            console.log("Player2 Won")
+        } else {
+            console.log("somethings wrong")
+        }
+
+        database.ref().update({
+            RunLogic: false,
+            Player1Choice: "a",
+            Player2Choice: "a",
+            
+        })
+
     }
 
-    // if "a" then they didnt press autolose unless both didnt press 
-    // set to a after game
-    database.ref().update({
-        Player1Choice: "a",
-        Player2Choice: "a",
-    })
-
-    runBreak()
-
-}
-
-// grab data from firebase if both players are true/present then start intermission and begin cycle
-function startGame(){
-    database.ref().on("value", function(snapshot) {
-
-        console.log(snapshot.val())
-
-        // if snapshot.child("player1") && player 2 start game cycle
-        if (snapshot.child("Player1").val() && snapshot.child("Player2").val()){
-            runBreak()
+    // if snapshot.child("player1") && player 2 start game cycle
+    if (snapshot.child("Player1").val() && snapshot.child("Player2").val()){
+        if(snapshot.child("GameStart").val()){
+            return false
         }
-    })
-}
+        database.ref().update({
+            GameStart: true,
+        })
+        runBreak()
+    }
 
+})
 
 // when the document is fully loaded
 $(document).ready(function() {
@@ -145,7 +147,6 @@ $(document).ready(function() {
         database.ref().update({
             Player1: true,
         })
-        startGame()
     })
     $("#select-player2").on("click",function(){
         $("#jumbo-3").text("You are player2")
@@ -153,7 +154,6 @@ $(document).ready(function() {
         database.ref().update({
             Player2: true,
         })
-        startGame()
     })
 
     // rockpaper scissors buttons
@@ -179,26 +179,28 @@ $(document).ready(function() {
 
         // reset ALL the firebase variables
         database.ref().update({
+            GameStart: false,
             Player1: false,
             Player1Choice: "a",
             Player1Wins: 0,
             Player2: false,
             Player2Choice: "a",
             Player2Wins: 0,
+            RunLogic: false,
             Ties: 0,
         })
     })
-    
-
 });
 
 // reset on startup
 database.ref().update({
+    GameStart: false,
     Player1: false,
     Player1Choice: "a",
     Player1Wins: 0,
     Player2: false,
     Player2Choice: "a",
     Player2Wins: 0,
+    RunLogic: false,
     Ties: 0,
 })
