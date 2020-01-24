@@ -20,7 +20,9 @@ var timer = startTime
 var duelPhase = false;
 var intervalId;
 
-var Player1Choice
+var playerSelected
+var player1Select
+var player2Select
 
 var tempArray = ["r","p","s"]
 
@@ -72,18 +74,16 @@ function breakTime() {
 }
 
 
-// when data changes console run this
+// when data changes this will run
 database.ref().on("value", function(snapshot) {
 
-    console.log("ref on value tick")
-
     // if the game logic value is true run game logic then reset runlogic value
-    if (snapshot.child("RunLogic").val()){
+    if (snapshot.child("RunLogic").val()&&player1Select){
 
         Player1Choice = snapshot.child("Player1Choice").val()
-        // Player2Choice = snapshot.child("Player2Choice").val()
+        Player2Choice = snapshot.child("Player2Choice").val()
 
-        Player2Choice = tempArray[Math.floor(Math.random() * tempArray.length)]
+        // Player2Choice = tempArray[Math.floor(Math.random() * tempArray.length)]
 
         // 1 double default
         // 1 tie
@@ -197,16 +197,14 @@ database.ref().on("value", function(snapshot) {
     }
 
     // if snapshot.child("player1") && player 2 start game cycle
-    if (snapshot.child("Player1").val() && snapshot.child("Player2").val()){
-        if(snapshot.child("GameStart").val()){
-            return false
+    if(!snapshot.child("GameStart").val()){
+        if (snapshot.child("Player1").val() && snapshot.child("Player2").val()){
+            database.ref().update({
+                GameStart: true,
+            })
+            runBreak()
         }
-        database.ref().update({
-            GameStart: true,
-        })
-        runBreak()
     }
-
 })
 
 // when the document is fully loaded
@@ -214,18 +212,28 @@ $(document).ready(function() {
 
     // player1/2 select button
     $("#select-player1").on("click",function(){
+        if(playerSelected){
+            return false
+        }
         $("#jumbo-2").text("You are player1")
         $("#current-player").text("1")
         database.ref().update({
             Player1: true,
         })
+        playerSelected = true
+        player1Select = true
     })
     $("#select-player2").on("click",function(){
+        if(playerSelected){
+            return false
+        }
         $("#jumbo-3").text("You are player2")
         $("#current-player").text("2")
         database.ref().update({
             Player2: true,
         })
+        playerSelected = true
+        player2Select = true
     })
 
     // rockpaper scissors buttons
@@ -236,9 +244,15 @@ $(document).ready(function() {
         }
         $("#jumbo-3").text("You chose ("+$(this).val()+")")
 
-        database.ref().update({
-            Player1Choice: $(this).val(),
-        })
+        if(player1Select){
+            database.ref().update({
+                Player1Choice: $(this).val(),
+            })
+        } else {
+            database.ref().update({
+                Player2Choice: $(this).val(),
+            })
+        }
     })
     
     // reset button
