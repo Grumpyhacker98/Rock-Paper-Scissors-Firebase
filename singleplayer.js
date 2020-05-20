@@ -7,6 +7,8 @@ var intervalId;
 
 var gameStart = false
 
+var score = 0
+
 var playerChoice = "a"
 var tempArray = ["r", "p", "s"]
 
@@ -95,6 +97,9 @@ function gameLogic() {
     } else {
         console.log("somethings wrong")
     }
+
+    playerChoice = "a"
+    $("#score").text(score)
 }
 
 // when the document is fully loaded
@@ -124,7 +129,9 @@ $(document).ready(function () {
         clearInterval(intervalId);
         stop()
         gameStart = false
+        score = 0
+        $("#score").text(score)
         $("#jumbo-1").text("Press start to begin!")
-        $("#jumbo-1").text("Beware the timer!")
+        $("#jumbo-2").text("Beware the timer!")
     })
 });
