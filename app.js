@@ -246,6 +246,8 @@
 // =========================================================================================================
 // new code
 
+// the timer and logic is only used with player 1, player 2 recieves messages using firebase
+
 // firebase link and startup
 // =================================================================
 var firebaseConfig = {
@@ -264,7 +266,8 @@ var database = firebase.database();
 
 
 var localData = {}
-
+var localPlayer
+var duelPhase = false
 
 // timer functions
 // ================================================
@@ -273,8 +276,11 @@ var intervalId
 // duel function
 function standOff() {
     duelPhase = true
-    $("#jumbo-2").text("Duel Phase: ")
-    $("#jumbo-3").text("Chose your weapon!")
+
+    database.ref().update({
+        Jumbo2: "Duel Phase",
+        Jumbo3: "Chose your weapon!"
+    })
 
     // begin the intermission function
     clearInterval(intervalId);
@@ -284,12 +290,11 @@ function standOff() {
 // intermission function
 function breakTime() {
     duelPhase = false
-    $("#jumbo-2").text("Intermission: ")
-    $("#jumbo-3").text("Ready yourself!")
 
-    database.ref().update({
-        RunLogic: true,
-    })
+    // run game logic immediatly after intermission starts
+    if (localPlayer === 1) {
+        gameLogic()
+    }
 
     // begin the duel phase
     clearInterval(intervalId);
@@ -300,13 +305,54 @@ function breakTime() {
 // =====================================================================
 $(document).ready(function () {
 
-    $(".player-id").on("click", function () {
-        $("#jumbo-1").text("You are Player " + $(this).val())
-        breakTime()
+    // players click a player id and it locks them in
+    $("#player-1").on("click", function () {
+        if (localData.Player1 || localData.GameStart || localPlayer) { return false }
+        $("#jumbo-1").text("You are Player 1")
+
+        localPlayer = 1
+        database.ref().update({
+            Player1: true,
+            Jumbo2: "Player 1 locked in"
+        })
     })
 
-    $(".game-logic").on("click", function () {
+    // players click a player id and it locks them in
+    $("#player-2").on("click", function () {
+        if (localData.Player2 || localData.GameStart || localPlayer) { return false }
+        $("#jumbo-1").text("You are Player 2")
 
+        localPlayer = 2
+        database.ref().update({
+            Player2: true,
+            Jumbo3: "Player 2 locked in"
+        })
+    })
+
+    // during duel phase records player choice
+    $(".game-logic").on("click", function () {
+        let choice
+        switch ($(this).val()) {
+            case "r":
+                choice = "rock"
+                break;
+            case "p":
+                choice = "paper"
+                break;
+            case "s":
+                choice = "scissors"
+                break;
+        }
+
+        if (localPlayer === 1) {
+            database.ref().update({
+                Player1Choice: $(this).val(),
+            })
+        } else {
+            database.ref().update({
+                Player2Choice: $(this).val(),
+            })
+        }
     })
 
     // reset button
@@ -314,8 +360,8 @@ $(document).ready(function () {
         clearInterval(intervalId);
 
         $("#jumbo-1").text("Select a player and lock in!")
-        $("#jumbo-2").text("Waiting for player 1")
-        $("#jumbo-3").text("Waiting for player 2")
+
+        localPlayer = false
 
         // reset ALL the firebase variables
         database.ref().update({
@@ -328,6 +374,8 @@ $(document).ready(function () {
             Player2Wins: 0,
             RunLogic: false,
             Ties: 0,
+            Jumbo2: "Waiting for player 1",
+            Jumbo3: "Waiting for player 2"
         })
     })
 
@@ -337,69 +385,107 @@ $(document).ready(function () {
 // on database refresh
 // ==============================================================================================
 database.ref().on("value", function (snapshot) {
-    console.log(snapshot.val())
+    //  make / refresh a local object with all the values
+    localData = snapshot.val()
 
+    // reset database+game if it starts playing on auto
+    if (localData.Ties === 20) {
+        clearInterval(intervalId);
+        $("#jumbo-1").text("Select a player and lock in!")
+        localPlayer = false
+        database.ref().update({
+            GameStart: false,
+            Player1: false,
+            Player1Choice: "a",
+            Player1Wins: 0,
+            Player2: false,
+            Player2Choice: "a",
+            Player2Wins: 0,
+            RunLogic: false,
+            Ties: 0,
+            Jumbo2: "Waiting for player 1",
+            Jumbo3: "Waiting for player 2"
+        })
+    }
+
+    // start game if both the players are locked in and set startgame true to prevent recurrence
+    if (localData.Player1 && localData.Player2 && !localData.GameStart) {
+
+        if (localPlayer === 1) {
+            standOff()
+        }
+
+        database.ref().update({
+            GameStart: true,
+        })
+    }
+
+    // update status display
+    $("#player1win").text(localData.Player1Wins)
+    $("#player2win").text(localData.Player2Wins)
+    $("#ties").text(localData.Ties)
+    $("#jumbo-2").text(localData.Jumbo2)
+    $("#jumbo-3").text(localData.Jumbo3)
 })
 
 // game logic function 
 // ================================================================================
 function gameLogic() {
 
-    // // 1 double default
-    // // 1 tie
-    // // 2 single defaults
-    // // 3 player 1 victories
-    // // 3 player 2 victories
-    // if (Player1Choice === "a" && Player2Choice === "a") {
-    //     console.log("both defaulted")
-    //     $("#ties").text(snapshot.child("Ties").val())
-    //     $("#jumbo-3").text("Both Players defaulted")
-    // } else if (Player1Choice === Player2Choice) {
-    //     console.log("tie")
-    //     $("#ties").text(snapshot.child("Ties").val())
-    //     $("#jumbo-3").text("Tie")
-    // } else if (Player1Choice === "a") {
-    //     console.log("Player1 defaulted")
-    //     $("#player2wins").text(snapshot.child("Player2Wins").val())
-    //     $("#jumbo-3").text("Player 1 defaulted")
-    // } else if (Player2Choice === "a") {
-    //     console.log("Player2 defaulted")
-    //     $("#player1wins").text(snapshot.child("Player1Wins").val())
-    //     $("#jumbo-3").text("Player 2 defaulted")
-    // } else if (Player1Choice === "r" && Player2Choice === "s") {
-    //     console.log("Player1 Won")
-    //     $("#player1wins").text(snapshot.child("Player1Wins").val())
-    //     $("#jumbo-3").text("Player 1 won with rock")
-    // } else if (Player1Choice === "s" && Player2Choice === "p") {
-    //     console.log("Player1 Won")
-    //     $("#player1wins").text(snapshot.child("Player1Wins").val())
-    //     $("#jumbo-3").text("Player 1 won with scissors")
-    // } else if (Player1Choice === "p" && Player2Choice === "r") {
-    //     console.log("Player1 Won")
-    //     $("#player1wins").text(snapshot.child("Player1Wins").val())
-    //     $("#jumbo-3").text("Player 1 wins with paper")
-    // } else if (Player2Choice === "r" && Player1Choice === "s") {
-    //     console.log("Player2 Won")
-    //     $("#player2wins").text(snapshot.child("Player2Wins").val())
-    //     $("#jumbo-3").text("Player 2 wins with rock")
-    // } else if (Player2Choice === "s" && Player1Choice === "p") {
-    //     console.log("Player2 Won")
-    //     $("#player2wins").text(snapshot.child("Player2Wins").val())
-    //     $("#jumbo-3").text("Player 2 wins with scissors")
-    // } else if (Player2Choice === "p" && Player1Choice === "r") {
-    //     console.log("Player2 Won")
-    //     $("#player2wins").text(snapshot.child("Player2Wins").val())
-    //     $("#jumbo-3").text("Player 2 wins with paper")
-    // } else {
-    //     console.log("somethings wrong")
-    // }
+    var player1win = localData.Player1Wins
+    var player2win = localData.Player2Wins
+    var tie = localData.Ties
+
+    Player1Choice = localData.Player1Choice
+    Player2Choice = localData.Player2Choice
+    var newJumbo3
+
+    // 1 double default
+    // 1 tie
+    // 2 single defaults
+    // 3 player 1 victories
+    // 3 player 2 victories
+    if (Player1Choice === "a" && Player2Choice === "a") {
+        tie++
+        newJumbo3 = "Both Players defaulted"
+    } else if (Player1Choice === Player2Choice) {
+        tie++
+        newJumbo3 = "Tie"
+    } else if (Player1Choice === "a") {
+        player2win++
+        newJumbo3 = "Player 1 defaulted"
+    } else if (Player2Choice === "a") {
+        player1win++
+        newJumbo3 = "Player 2 defaulted"
+    } else if (Player1Choice === "r" && Player2Choice === "s") {
+        player1win++
+        newJumbo3 = "Player 1 won with rock"
+    } else if (Player1Choice === "s" && Player2Choice === "p") {
+        player1win++
+        newJumbo3 = "Player 1 won with scissors"
+    } else if (Player1Choice === "p" && Player2Choice === "r") {
+        player1win++
+        newJumbo3 = "Player 1 wins with paper"
+    } else if (Player2Choice === "r" && Player1Choice === "s") {
+        player2win++
+        newJumbo3 = "Player 2 wins with rock"
+    } else if (Player2Choice === "s" && Player1Choice === "p") {
+        player2win++
+        newJumbo3 = "Player 2 wins with scissors"
+    } else if (Player2Choice === "p" && Player1Choice === "r") {
+        player2win++
+        newJumbo3 = "Player 2 wins with paper"
+    } else {
+        console.log("somethings wrong")
+    }
+
+    database.ref().update({
+        Player1Wins: player1win,
+        Player2Wins: player2win,
+        Ties: tie,
+        Jumbo2: "Intermission",
+        Jumbo3: newJumbo3,
+        Player1Choice: "a",
+        Player2Choice: "a"
+    })
 }
-
-// on player click
-    // players click a player id and it locks them in
-    // during duel phase records player choice
-    // reset game resets everything 
-
-// whenever database refresh
-    //  make / refresh a local object with all the values
-    // start game if both the players are locked in and set startgame true to prevent recurrence
