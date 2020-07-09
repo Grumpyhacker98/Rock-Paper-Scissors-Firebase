@@ -32,9 +32,10 @@ function standOff() {
         Jumbo3: "Chose your weapon!"
     })
 
+    console.log("tick")
     // begin the intermission function
     clearInterval(intervalId);
-    intervalId = setInterval(breakTime, 5000);
+    intervalId = setInterval(breakTime, 3000);
 }
 
 // intermission function
@@ -46,9 +47,10 @@ function breakTime() {
         gameLogic()
     }
 
+    console.log("tick")
     // begin the duel phase
     clearInterval(intervalId);
-    intervalId = setInterval(standOff, 5000);
+    intervalId = setInterval(standOff, 3000);
 }
 
 // player interactions
@@ -135,6 +137,7 @@ $(document).ready(function () {
 database.ref().on("value", function (snapshot) {
     //  make / refresh a local object with all the values
     localData = snapshot.val()
+    console.log(localData)
 
     // start game if both the players are locked in
     if (localData.Player1 && localData.Player2 && !localData.GameStart) {
@@ -150,6 +153,10 @@ database.ref().on("value", function (snapshot) {
 
     if (localData.GameStart && localPlayer !== false) {
         $("#jumbo-1").text("Select a player and lock in!")
+    }
+
+    if(localData.GameStart === false){
+        clearInterval(intervalId)
     }
 
     // update status display
@@ -213,7 +220,7 @@ function gameLogic() {
 
     // reset database+game if it starts playing on auto
     if (localData.Ties === 2) {
-
+        clearInterval(intervalId)
         if (localPlayer === 1) {
             clearInterval(intervalId)
 
