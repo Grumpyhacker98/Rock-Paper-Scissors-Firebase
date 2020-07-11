@@ -34,7 +34,7 @@ function standOff() {
     console.log("tick")
     // begin the intermission function
     clearInterval(intervalId);
-    intervalId = setInterval(breakTime, 3000);
+    intervalId = setInterval(breakTime, 5000);
 }
 
 // intermission function
@@ -46,10 +46,35 @@ function breakTime() {
         gameLogic()
     }
 
+    // end game overflow if both parties leave
+    if (fireData.Ties === 2) {
+        // clearInterval(intervalId)
+        if (localPlayer === 1) {
+            clearInterval(intervalId)
+
+            database.ref().update({
+                GameStart: false,
+                Player1: false,
+                Player1Choice: "a",
+                Player1Wins: 0,
+                Player2: false,
+                Player2Choice: "a",
+                Player2Wins: 0,
+                RunLogic: false,
+                Ties: 0,
+                Jumbo2: "Waiting for player 1",
+                Jumbo3: "Waiting for player 2"
+            })
+        }
+        $("#jumbo-1").text("Select a player and lock in!")
+        localPlayer = false
+        return
+    }
+
     console.log("tick")
     // begin the duel phase
     clearInterval(intervalId);
-    intervalId = setInterval(standOff, 3000);
+    intervalId = setInterval(standOff, 5000);
 }
 
 // player interactions
@@ -135,6 +160,7 @@ $(document).ready(function () {
 // ==============================================================================================
 database.ref().on("value", function (snapshot) {
     fireData = snapshot.val()
+    console.log(fireData)
 
     // start game if both the players are locked in
     if (fireData.Player1 && fireData.Player2 && !fireData.GameStart) {
@@ -146,14 +172,6 @@ database.ref().on("value", function (snapshot) {
         database.ref().update({
             GameStart: true,
         })
-    }
-
-    if (fireData.GameStart && localPlayer !== false) {
-        $("#jumbo-1").text("Select a player and lock in!")
-    }
-
-    if(fireData.GameStart === false){
-        clearInterval(intervalId)
     }
 
     // update status display
@@ -215,39 +233,14 @@ function gameLogic() {
         console.log("game logic error")
     }
 
-    // reset database+game if it starts playing on auto
-    if (tie === 2) {
-        clearInterval(intervalId)
-        if (localPlayer === 1) {
-            clearInterval(intervalId)
-
-            database.ref().update({
-                GameStart: false,
-                Player1: false,
-                Player1Choice: "a",
-                Player1Wins: 0,
-                Player2: false,
-                Player2Choice: "a",
-                Player2Wins: 0,
-                RunLogic: false,
-                Ties: 0,
-                Jumbo2: "Waiting for player 1",
-                Jumbo3: "Waiting for player 2"
-            })
-        }
-        $("#jumbo-1").text("Select a player and lock in!")
-        localPlayer = false
-
     // reset the jumbo and stats for both parties
-    } else {
-        database.ref().update({
-            Player1Wins: player1win,
-            Player2Wins: player2win,
-            Ties: tie,
-            Jumbo2: "Intermission",
-            Jumbo3: newJumbo3,
-            Player1Choice: "a",
-            Player2Choice: "a"
-        })
-    }
+    database.ref().update({
+        Player1Wins: player1win,
+        Player2Wins: player2win,
+        Ties: tie,
+        Jumbo2: "Intermission",
+        Jumbo3: newJumbo3,
+        Player1Choice: "a",
+        Player2Choice: "a"
+    })
 }
