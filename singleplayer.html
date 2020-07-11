@@ -16,31 +16,34 @@
 
     <div class="container p-3">
 
-        <!-- 2 buttons to select what player the computer is ,a button to lock it in-->
-        <div class="d-flex justify-content-between">
-            <button id="start">Start</button>
-            <button id="reset">Reset</button>
-            <h3>Score<h3 id="score"></h3>
+        <div class="row pb-3">
+            <div class="col-4">
+                <button id="start">Start</button>
+            </div>
+            <div class="col-4">
+                <button id="reset">Reset</button>
+            </div>
+            <div class="col-4">
+                <h5>Score<h5 id="score"></h5>
+            </div>
         </div>
 
-        <!-- game status jumbotron with overflow -->
-        <div class="row">
-            <div class="jumbotron jumbotron-fluid w-100">
-                <p class="lead text-center" id="jumbo-1">Start the game</p>
-                <hr class="my-4">
-                <p class="lead text-center" id="jumbo-2">Good luck!</p>
-            </div>
+        <!-- game status jumbotron -->
+        <div class="jumbotron jumbotron-fluid w-100">
+            <p class="lead text-center" id="jumbo-1">Start the game</p>
+            <hr class="my-4">
+            <p class="lead text-center" id="jumbo-2">Good luck!</p>
         </div>
 
         <!-- 3 rock paper scissors buttons -->
         <div class="row">
-            <div class="col">
+            <div class="col-4">
                 <button class="game-logic" value="r">Rock</button>
             </div>
-            <div class="col">
+            <div class="col-4">
                 <button class="game-logic" value="p">Paper</button>
             </div>
-            <div class="col">
+            <div class="col-4">
                 <button class="game-logic" value="s">Scissors</button>
             </div>
         </div>
