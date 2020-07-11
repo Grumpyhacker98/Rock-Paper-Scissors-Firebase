@@ -57,7 +57,7 @@ function breakTime() {
 // game logic
 function gameLogic() {
     botChoice = tempArray[Math.floor(Math.random() * tempArray.length)]
-    console.log(playerChoice+" "+botChoice)
+    console.log(playerChoice + " " + botChoice)
 
     // 1 default
     // 1 tie
@@ -117,10 +117,20 @@ $(document).ready(function () {
     // rockpaper scissors buttons
     $(".game-logic").on("click", function () {
         // if the duel phase is running
-        if (!duelPhase) {
-            return false;
+        if (!duelPhase) { return false; }
+        let choice
+        switch ($(this).val()) {
+            case "r":
+                choice = "rock"
+                break;
+            case "p":
+                choice = "paper"
+                break;
+            case "s":
+                choice = "scissors"
+                break;
         }
-        $("#jumbo-2").text("You chose (" + $(this).val() + ")")
+        $("#jumbo-2").text("You chose " + choice)
         playerChoice = $(this).val()
         console.log(playerChoice)
     })
