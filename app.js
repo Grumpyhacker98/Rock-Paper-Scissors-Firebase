@@ -13,9 +13,8 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var database = firebase.database();
+var fireData = {}
 
-
-var localData = {}
 var localPlayer
 var duelPhase = false
 
@@ -59,7 +58,7 @@ $(document).ready(function () {
 
     // players click a player id and it locks them in
     $("#player-1").on("click", function () {
-        if (localData.Player1 || localData.GameStart || localPlayer) { return false }
+        if (fireData.Player1 || fireData.GameStart || localPlayer) { return false }
         $("#jumbo-1").text("You are Player 1")
 
         localPlayer = 1
@@ -71,7 +70,7 @@ $(document).ready(function () {
 
     // players click a player id and it locks them in
     $("#player-2").on("click", function () {
-        if (localData.Player2 || localData.GameStart || localPlayer) { return false }
+        if (fireData.Player2 || fireData.GameStart || localPlayer) { return false }
         $("#jumbo-1").text("You are Player 2")
 
         localPlayer = 2
@@ -132,15 +131,13 @@ $(document).ready(function () {
 
 })
 
-// on database refresh
+// whenever the database recieves new data
 // ==============================================================================================
 database.ref().on("value", function (snapshot) {
-    //  make / refresh a local object with all the values
-    localData = snapshot.val()
-    console.log(localData)
+    fireData = snapshot.val()
 
     // start game if both the players are locked in
-    if (localData.Player1 && localData.Player2 && !localData.GameStart) {
+    if (fireData.Player1 && fireData.Player2 && !fireData.GameStart) {
         // start timer + gamelogic for player 1
         if (localPlayer === 1) {
             standOff()
@@ -151,32 +148,32 @@ database.ref().on("value", function (snapshot) {
         })
     }
 
-    if (localData.GameStart && localPlayer !== false) {
+    if (fireData.GameStart && localPlayer !== false) {
         $("#jumbo-1").text("Select a player and lock in!")
     }
 
-    if(localData.GameStart === false){
+    if(fireData.GameStart === false){
         clearInterval(intervalId)
     }
 
     // update status display
-    $("#player1win").text(localData.Player1Wins)
-    $("#player2win").text(localData.Player2Wins)
-    $("#ties").text(localData.Ties)
-    $("#jumbo-2").text(localData.Jumbo2)
-    $("#jumbo-3").text(localData.Jumbo3)
+    $("#player1win").text(fireData.Player1Wins)
+    $("#player2win").text(fireData.Player2Wins)
+    $("#ties").text(fireData.Ties)
+    $("#jumbo-2").text(fireData.Jumbo2)
+    $("#jumbo-3").text(fireData.Jumbo3)
 })
 
 // game logic function 
 // ================================================================================
 function gameLogic() {
 
-    var player1win = localData.Player1Wins
-    var player2win = localData.Player2Wins
-    var tie = localData.Ties
+    var player1win = fireData.Player1Wins
+    var player2win = fireData.Player2Wins
+    var tie = fireData.Ties
 
-    Player1Choice = localData.Player1Choice
-    Player2Choice = localData.Player2Choice
+    Player1Choice = fireData.Player1Choice
+    Player2Choice = fireData.Player2Choice
     var newJumbo3
 
     // 1 double default
@@ -219,7 +216,7 @@ function gameLogic() {
     }
 
     // reset database+game if it starts playing on auto
-    if (localData.Ties === 2) {
+    if (tie === 2) {
         clearInterval(intervalId)
         if (localPlayer === 1) {
             clearInterval(intervalId)
