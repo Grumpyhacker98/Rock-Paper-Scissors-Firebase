@@ -18,7 +18,7 @@ var fireData = {}
 var localPlayer
 var duelPhase = false
 
-// timer functions
+// timer functions     only player 1 runs timer, player 2 updates from firebase 
 // ================================================
 var intervalId
 
@@ -47,7 +47,7 @@ function breakTime() {
     }
 
     // end game overflow if both parties leave
-    if (fireData.Ties === 2) {
+    if (fireData.Ties === 20) {
         // clearInterval(intervalId)
         if (localPlayer === 1) {
             clearInterval(intervalId)
@@ -63,11 +63,10 @@ function breakTime() {
                 RunLogic: false,
                 Ties: 0,
                 Jumbo2: "Waiting for player 1",
-                Jumbo3: "Waiting for player 2"
+                Jumbo3: "Waiting for player 2",
+                Reset: true
             })
         }
-        $("#jumbo-1").text("Select a player and lock in!")
-        localPlayer = false
         return
     }
 
@@ -119,6 +118,7 @@ $(document).ready(function () {
                 choice = "scissors"
                 break;
         }
+        $("#jumbo-1").text("Player " + localPlayer + " has chosen " + choice)
 
         if (localPlayer === 1) {
             database.ref().update({
@@ -167,11 +167,22 @@ database.ref().on("value", function (snapshot) {
         // start timer + gamelogic for player 1
         if (localPlayer === 1) {
             standOff()
+
+            // set startgame true to prevent recurrence
+            database.ref().update({
+                GameStart: true,
+            })
         }
-        // set startgame true to prevent recurrence
-        database.ref().update({
-            GameStart: true,
-        })
+    }
+
+    if (fireData.Reset) {
+        if (localPlayer === 1) {
+            database.ref().update({
+                Reset: false,
+            })
+        }
+        $("#jumbo-1").text("Select a player and lock in!")
+        localPlayer = false
     }
 
     // update status display
