@@ -109,8 +109,9 @@ $(document).ready(function () {
     $("#start").on("click", function () {
         if (gameStart) return false
         gameStart = true
-        $("#jumbo-1").text("Intermission!: ")
-        runBreak()
+        $("#jumbo-1").text("Duel Phase: ")
+        $("#jumbo-2").text("Chose your weapon!")
+        runDuel()
     })
 
     // rockpaper scissors buttons
